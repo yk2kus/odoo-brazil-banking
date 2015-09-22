@@ -45,6 +45,7 @@ class Itau240(Cnab240):
         :return:
         """
         vals = super(Itau240, self)._prepare_header()
+        vals['cedente_agencia_conta_dv'] = int(vals['cedente_agencia_conta_dv'])
         return vals
 
     def _prepare_segmento(self, line):
@@ -54,4 +55,5 @@ class Itau240(Cnab240):
         :return:
         """
         vals = super(Itau240, self)._prepare_segmento(line)
+        vals['cedente_agencia_conta_dv'] = int(vals['cedente_agencia_conta_dv'])
         return vals

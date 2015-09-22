@@ -28,3 +28,24 @@ class Cef240(Cnab240):
 
     def __init__(self):
         super(Cnab240, self).__init__()
+        from cnab240.bancos import cef
+        self.bank = cef
+
+    def _prepare_header(self):
+        """
+
+        :return:
+        """
+        vals = super(Cef240, self)._prepare_header()
+        vals['cedente_agencia_conta_dv'] = str(vals['cedente_agencia_conta_dv'])
+        return vals
+
+    def _prepare_segmento(self, line):
+        """
+
+        :param line:
+        :return:
+        """
+        vals = super(Cef240, self)._prepare_segmento(line)
+        vals['cedente_agencia_conta_dv'] = str(vals['cedente_agencia_conta_dv'])
+        return vals

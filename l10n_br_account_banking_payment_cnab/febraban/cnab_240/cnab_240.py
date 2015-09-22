@@ -29,6 +29,7 @@ import datetime
 import re
 import string
 import unicodedata
+import time
 
 
 class Cnab240(Cnab):
@@ -67,16 +68,16 @@ class Cnab240(Cnab):
         :return:
         """
         return {
-            'arquivo_data_de_geracao': 27062012,
-            'arquivo_hora_de_geracao': 112000,
+            'arquivo_data_de_geracao': self.data_hoje(),
+            'arquivo_hora_de_geracao': self.hora_agora(),
+            # TODO: Número sequencial de arquivo
             'arquivo_sequencia': 1,
             'cedente_inscricao_tipo': self.inscricao_tipo,
             'cedente_inscricao_numero': int(punctuation_rm(
                 self.order.company_id.cnpj_cpf)),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
-            'cedente_agencia_conta_dv': int(
-                self.order.mode.bank_id.bra_number_dig),
+            'cedente_agencia_conta_dv': self.order.mode.bank_id.bra_number_dig,
             'cedente_nome': self.order.company_id.legal_name,
             'cedente_codigo_agencia_digito': int(
                 self.order.mode.bank_id.bra_number_dig),
@@ -123,7 +124,7 @@ class Cnab240(Cnab):
         return {
             'cedente_agencia': 4459,  # FIXME
             'cedente_conta': 17600,  # FIXME
-            'cedente_agencia_conta_dv': 6,
+            'cedente_agencia_conta_dv': self.order.mode.bank_id.bra_number_dig,
             'carteira_numero': int(carteira),
             'nosso_numero': int(nosso_numero),
             'nosso_numero_dv': int(digito),
@@ -169,3 +170,9 @@ class Cnab240(Cnab):
         remessa = unicode(self.arquivo)
         return unicodedata.normalize(
             'NFKD', remessa).encode('ascii', 'ignore')
+
+    def data_hoje(self):
+        return (int(time.strftime("%d%m%Y")))
+
+    def hora_agora(self):
+        return (int(time.strftime("%H%M%S")))
