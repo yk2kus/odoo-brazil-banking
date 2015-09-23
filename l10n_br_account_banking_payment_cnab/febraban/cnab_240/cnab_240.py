@@ -77,10 +77,11 @@ class Cnab240(Cnab):
                 self.order.company_id.cnpj_cpf)),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
-            'cedente_agencia_conta_dv': self.order.mode.bank_id.bra_number_dig,
+            'cedente_agencia_conta_dv':
+                self.order.mode.bank_id.bra_number_dig,
             'cedente_nome': self.order.company_id.legal_name,
-            'cedente_codigo_agencia_digito': int(
-                self.order.mode.bank_id.bra_number_dig),
+            'cedente_codigo_agencia_digito':
+                self.order.mode.bank_id.bra_number_dig,
             'arquivo_codigo': 1,  # Remessa/Retorno
             'reservado_cedente_campo': u'REMESSA-TESTE',
             'servico_operacao': u'R'
@@ -91,11 +92,7 @@ class Cnab240(Cnab):
             srt_date, '%Y-%m-%d').strftime('%d%m%Y'))
 
     def nosso_numero(self, format):
-        digito = format[-1:]
-        carteira = format[:3]
-        nosso_numero = re.sub(
-            '[%s]' % re.escape(string.punctuation), '', format[3:-1] or '')
-        return carteira, nosso_numero, digito
+        pass
 
     def cep(self, format):
         sulfixo = format[-3:]
@@ -118,16 +115,12 @@ class Cnab240(Cnab):
         :param line:
         :return:
         """
-        carteira, nosso_numero, digito = self.nosso_numero(
-            line.move_line_id.transaction_ref)  # TODO: Improve!
+
         prefixo, sulfixo = self.cep(line.partner_id.zip)
         return {
-            'cedente_agencia': 4459,  # FIXME
-            'cedente_conta': 17600,  # FIXME
+            'cedente_agencia': int(self.order.mode.bank_id.bra_number),
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_agencia_conta_dv': self.order.mode.bank_id.bra_number_dig,
-            'carteira_numero': int(carteira),
-            'nosso_numero': int(nosso_numero),
-            'nosso_numero_dv': int(digito),
             'identificacao_titulo': u'0000000',  # TODO
             'numero_documento': line.name,
             'vencimento_titulo': self.format_date(

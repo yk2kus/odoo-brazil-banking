@@ -22,6 +22,8 @@
 ##############################################################################
 
 from ..cnab_240 import Cnab240
+import re
+import string
 
 
 class Itau240(Cnab240):
@@ -45,7 +47,10 @@ class Itau240(Cnab240):
         :return:
         """
         vals = super(Itau240, self)._prepare_header()
-        vals['cedente_agencia_conta_dv'] = int(vals['cedente_agencia_conta_dv'])
+        vals['cedente_agencia_conta_dv'] = int(
+            vals['cedente_agencia_conta_dv'])
+        vals['cedente_codigo_agencia_digito'] = int(
+            vals['cedente_codigo_agencia_digito']),
         return vals
 
     def _prepare_segmento(self, line):
@@ -55,5 +60,22 @@ class Itau240(Cnab240):
         :return:
         """
         vals = super(Itau240, self)._prepare_segmento(line)
-        vals['cedente_agencia_conta_dv'] = int(vals['cedente_agencia_conta_dv'])
+
+        carteira, nosso_numero, digito = self.nosso_numero(
+            line.move_line_id.transaction_ref)
+
+        vals['cedente_agencia_conta_dv'] = int(
+            vals['cedente_agencia_conta_dv'])
+        vals['carteira_numero'] = int(carteira)
+        vals['nosso_numero'] = int(nosso_numero)
+        vals['nosso_numero_dv'] = int(digito)
+
         return vals
+
+    # Override cnab_240.nosso_numero. Diferentes números de dígitos entre CEF e Itau
+    def nosso_numero(self, format):
+        digito = format[-1:]
+        carteira = format[:3]
+        nosso_numero = re.sub(
+            '[%s]' % re.escape(string.punctuation), '', format[3:-1] or '')
+        return carteira, nosso_numero, digito
