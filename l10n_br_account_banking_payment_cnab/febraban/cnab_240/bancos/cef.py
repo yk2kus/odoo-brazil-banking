@@ -39,10 +39,10 @@ class Cef240(Cnab240):
         :return:
         """
         vals = super(Cef240, self)._prepare_header()
-        vals['cedente_agencia_conta_dv'] = str(
-            vals['cedente_agencia_conta_dv'])
-        vals['cedente_codigo_agencia_digito'] = str(
-            vals['cedente_codigo_agencia_digito']),
+        vals['cedente_agencia_conta_dv'] = unicode(str(
+            vals['cedente_agencia_conta_dv']), "utf-8")
+        vals['cedente_codigo_agencia_digito'] = unicode(str(
+            vals['cedente_codigo_agencia_digito']), "utf-8")
         return vals
 
     def _prepare_segmento(self, line):
@@ -56,14 +56,16 @@ class Cef240(Cnab240):
         carteira, nosso_numero, digito = self.nosso_numero(
             line.move_line_id.transaction_ref)
 
-        vals['cedente_agencia_conta_dv'] = str(
-            vals['cedente_agencia_conta_dv'])
+        vals['cedente_agencia_conta_dv'] = unicode(str(
+            vals['cedente_agencia_conta_dv']), "utf-8")
         vals['identificacao_titulo'] = unicode(str(
             vals['numero_documento']), "utf-8") # Informar o Número do Documento - Seu Número (mesmo das posições 63-73 do Segmento P)
-
+        # TODO: campo 27.3P CEF. Código do juros de mora
         vals['carteira_numero'] = int(carteira)
         vals['nosso_numero'] = int(nosso_numero)
         vals['nosso_numero_dv'] = int(digito)
+        vals['prazo_baixa'] = unicode(str(
+            vals['prazo_baixa']), "utf-8")
 
         return vals
 
