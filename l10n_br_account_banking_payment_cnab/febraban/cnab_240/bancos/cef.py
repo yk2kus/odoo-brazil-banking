@@ -24,6 +24,7 @@
 from ..cnab_240 import Cnab240
 import re
 import string
+from decimal import *
 
 
 class Cef240(Cnab240):
@@ -43,6 +44,9 @@ class Cef240(Cnab240):
             vals['cedente_agencia_conta_dv']), "utf-8")
         vals['cedente_codigo_agencia_digito'] = unicode(str(
             vals['cedente_codigo_agencia_digito']), "utf-8")
+        vals['nome_do_banco'] = u'CAIXA ECONOMICA FEDERAL'
+
+        # reservado_banco_campo22 não é required. renomeado para vazio3
         return vals
 
     def _prepare_segmento(self, line):
@@ -66,6 +70,11 @@ class Cef240(Cnab240):
         vals['nosso_numero_dv'] = int(digito)
         vals['prazo_baixa'] = unicode(str(
             vals['prazo_baixa']), "utf-8")
+
+        # Precisam estar preenchidos
+        vals['desconto1_data'] = 12122000
+        vals['desconto1_percentual'] = Decimal('10.00') # Precisa ter default no json
+        vals['valor_iof'] = Decimal('0.03')
 
         return vals
 

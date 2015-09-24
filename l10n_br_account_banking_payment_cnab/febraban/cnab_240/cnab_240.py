@@ -85,7 +85,9 @@ class Cnab240(Cnab):
                 self.order.mode.bank_id.bra_number_dig,
             'arquivo_codigo': 1,  # Remessa/Retorno
             'reservado_cedente_campo': u'REMESSA-TESTE',
-            'servico_operacao': u'R'
+            'servico_operacao': u'R',
+
+            'cedente_codigo_codCedente': 6089,
         }
 
     def format_date(self, srt_date):
@@ -141,7 +143,7 @@ class Cnab240(Cnab):
                 self.rmchar(line.partner_id.cnpj_cpf)),
             'sacado_nome': line.partner_id.legal_name,
             'sacado_endereco': (
-                line.partner_id.street + ',' + line.partner_id.number),
+                line.partner_id.street + ' ' + line.partner_id.number),
             'sacado_bairro': line.partner_id.district,
             'sacado_cep': int(prefixo),
             'sacado_cep_sufixo': int(sulfixo),
