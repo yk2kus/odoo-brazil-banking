@@ -46,7 +46,7 @@ class Cef240(Cnab240):
             vals['cedente_codigo_agencia_digito']), "utf-8")
         vals['nome_do_banco'] = u'CAIXA ECONOMICA FEDERAL'
 
-        # reservado_banco_campo22 não é required. renomeado para vazio3
+        # reservado_banco_campo22 não é required. Código atualizado na biblioteca cnab240
         return vals
 
     def _prepare_segmento(self, line):
@@ -72,8 +72,9 @@ class Cef240(Cnab240):
             vals['prazo_baixa']), "utf-8")
 
         # Precisam estar preenchidos
-        vals['desconto1_data'] = 12122000
-        vals['desconto1_percentual'] = Decimal('10.00') # Precisa ter default no json
+        vals['desconto1_cod'] = 3
+        vals['desconto1_data'] = 0
+        vals['desconto1_percentual'] = Decimal('0.00')
         vals['valor_iof'] = Decimal('0.03')
 
         return vals
