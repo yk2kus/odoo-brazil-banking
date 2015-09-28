@@ -44,9 +44,14 @@ class Cef240(Cnab240):
             vals['cedente_agencia_conta_dv']), "utf-8")
         vals['cedente_codigo_agencia_digito'] = unicode(str(
             vals['cedente_codigo_agencia_digito']), "utf-8")
+        # TODO: adicionar campo para preencher o codigo do cedente no cadastro da conta bancária
+        vals['cedente_codigo_codCedente'] = 6088
         vals['nome_do_banco'] = u'CAIXA ECONOMICA FEDERAL'
+        vals['reservado_cedente_campo23'] = u'REMESSA TESTE' # Não pode pegar comentário da payment_line.
 
         # reservado_banco_campo22 não é required. Código atualizado na biblioteca cnab240
+        vals['data_credito_hd_lote'] = 15052015
+
         return vals
 
     def _prepare_segmento(self, line):
@@ -72,10 +77,18 @@ class Cef240(Cnab240):
             vals['prazo_baixa']), "utf-8")
 
         # Precisam estar preenchidos
+        # Header lote
+        # vals['servico_operacao'] = u'R'
+        # vals['servico_servico'] = 1
+        vals['cedente_conta_dv'] = unicode(str(
+            vals['cedente_conta_dv']), "utf-8")
+        vals['cedente_codigo_codCedente'] = 6088
+        vals['data_credito_hd_lote'] = 15052015
+
         vals['desconto1_cod'] = 3
         vals['desconto1_data'] = 0
         vals['desconto1_percentual'] = Decimal('0.00')
-        vals['valor_iof'] = Decimal('0.03')
+        vals['valor_iof'] = Decimal('0.00')
 
         return vals
 

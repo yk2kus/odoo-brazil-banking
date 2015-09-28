@@ -84,10 +84,7 @@ class Cnab240(Cnab):
             'cedente_codigo_agencia_digito':
                 self.order.mode.bank_id.bra_number_dig,
             'arquivo_codigo': 1,  # Remessa/Retorno
-            'reservado_cedente_campo': u'REMESSA-TESTE',
             'servico_operacao': u'R',
-
-            'cedente_codigo_codCedente': 6089,
         }
 
     def format_date(self, srt_date):
@@ -123,6 +120,7 @@ class Cnab240(Cnab):
         return {
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
+            'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
             'cedente_agencia_conta_dv': self.order.mode.bank_id.bra_number_dig,
             'identificacao_titulo': u'0000000',  # TODO
             'numero_documento': line.name,
@@ -153,6 +151,7 @@ class Cnab240(Cnab):
             'prazo_protesto': 0,
             'codigo_baixa': 2,
             'prazo_baixa': 0, # De 5 a 120 dias.
+            'controlecob_data_gravacao': self.data_hoje(),
         }
 
     def remessa(self, order):
