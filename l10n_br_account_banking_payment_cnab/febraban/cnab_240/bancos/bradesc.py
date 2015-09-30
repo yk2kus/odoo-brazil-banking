@@ -20,31 +20,43 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-# TODO: implement abc factory?
 
 
-class Cnab(object):
+from ..cnab_240 import Cnab240
+import re
+import string
+from decimal import *
+
+
+class BradescoPagFor(Cnab240):
 
     def __init__(self):
-        pass
+        super(Cnab240, self).__init__()
+        from cnab240.bancos import bradescoPagFor
+        self.bank = bradescoPagFor
 
-    @staticmethod
-    def get_cnab(bank, cnab_type='240'):
-        if cnab_type == '240':
-            from .cnab_240.cnab_240 import Cnab240
-            return Cnab240.get_bank(bank)
-        elif cnab_type == '400':
-            from .cnab_400.cnab_400 import Cnab400
-            return Cnab400.get_bank(bank)
-        elif cnab_type == '500':
-            from .pag_for.pag_for500 import PagFor500
-            return PagFor500.get_bank(bank)
-            pass
-        else:
-            return False
+    def _prepare_header(self):
+        """
 
-    def remessa(self, order):
-        return False
+        :param order:
+        :return:
+        """
+        vals = super(BradescoPagFor, self)._prepare_header()
+        return vals
 
-    def retorno(self, cnab_file):
-        return object
+    def _prepare_segmento(self, line):
+        """
+
+        :param line:
+        :return:
+        """
+        vals = super(BradescoPagFor, self)._prepare_segmento(line)
+        return vals
+
+    # Override cnab_240.nosso_numero. Diferentes números de dígitos entre CEF e Itau
+    def nosso_numero(self, format):
+        digito = format[-1:]
+        carteira = format[:3]
+        nosso_numero = re.sub(
+            '[%s]' % re.escape(string.punctuation), '', format[3:-1] or '')
+        return carteira, nosso_numero, digito

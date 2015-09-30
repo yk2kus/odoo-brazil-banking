@@ -3,7 +3,6 @@
 #
 #    Author: Luis Felipe Mileo
 #            Fernando Marcato Rodrigues
-#            Daniel Sadamo Hirayama
 #    Copyright 2015 KMEE - www.kmee.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -33,7 +32,7 @@ import time
 from decimal import *
 
 
-class Cnab240(Cnab):
+class PagFor500(Cnab):
     """
 
     """
@@ -42,17 +41,11 @@ class Cnab240(Cnab):
 
     @staticmethod
     def get_bank(bank):
-        if bank == '341':
-            from bancos.itau import Itau240
-            return Itau240
-        elif bank == '237':
+        if bank == '237':
             from bancos.bradesc import BradescoPagFor
             return BradescoPagFor
-        elif bank == '104':
-            from bancos.cef import Cef240
-            return Cef240
         else:
-            return Cnab240
+            return PagFor500
 
     @property
     def inscricao_tipo(self):
@@ -152,6 +145,12 @@ class Cnab240(Cnab):
             'codigo_baixa': 2,
             'prazo_baixa': 0, # De 5 a 120 dias.
             'controlecob_data_gravacao': self.data_hoje(),
+
+            # Durante testes:
+            'valor_documento': Decimal(str(line.amount_currency)).quantize(
+                Decimal('1.00'), rounding=ROUND_DOWN),
+            'valor_pagto': Decimal(str(line.amount_currency)).quantize(
+                Decimal('1.00'), rounding=ROUND_DOWN), # FIXME: valor pode diferir do documento
         }
 
     def remessa(self, order):
@@ -163,7 +162,7 @@ class Cnab240(Cnab):
         self.order = order
         self.arquivo = Arquivo(self.bank, **self._prepare_header())
         for line in order.line_ids:
-            self.arquivo.incluir_cobranca(**self._prepare_segmento(line))
+            self.arquivo.incluir_pagamento(**self._prepare_segmento(line))
         remessa = unicode(self.arquivo)
         return unicodedata.normalize(
             'NFKD', remessa).encode('ascii', 'ignore')
@@ -173,3 +172,4 @@ class Cnab240(Cnab):
 
     def hora_agora(self):
         return (int(time.strftime("%H%M%S")))
+
