@@ -121,15 +121,10 @@ class PagFor500(Cnab):
 
         prefixo, sulfixo = self.cep(line.partner_id.zip)
         return {
-            'numero_documento': line.name,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
-            'valor_titulo': Decimal(str(line.amount_currency)).quantize(
-                Decimal('1.00'), rounding=ROUND_DOWN),
             'especie_titulo': 8,  # TODO: Código adotado para identificar o título de cobrança. 8 é Nota de cŕedito comercial
             'aceite_titulo': u'A',  # TODO: 'A' se título foi aceito pelo sacado. 'N' se não foi.
-            'data_emissao_titulo': self.format_date(
-                line.ml_date_created),
 
             'juros_mora_taxa_dia': Decimal('0.00'), # TODO: trazer taxa de juros do Odoo. Depende do valor do 27.3P CEF/FEBRABAN e Itaú não tem.
             'valor_abatimento': Decimal('0.00'),
@@ -153,9 +148,23 @@ class PagFor500(Cnab):
             'digito_conta_forn': self.order.mode.bank_id.acc_number_dig,
             # TODO Gerado pelo cliente pagador quando do agendamento de pagamento por parte desse, exceto para a modalidade 30 - Títulos em Cobrança Bradesco
             'numero_pagamento': 1234321,
+            'carteira': 31,  # FIXME
+            'nosso_numero': 11,
+            'numero_documento': line.name,
+            'vencimento_titulo': self.format_date(
+                line.ml_maturity_date),
+            'data_emissao_titulo': self.format_date(
+                line.ml_date_created),
+            'desconto1_data': 0,
+            'fator_vencimento': 1122,  # FIXME
+            'valor_titulo': Decimal(str(line.amount_currency)).quantize(
+                Decimal('1.00'), rounding=ROUND_DOWN),
+            'valor_pagto': Decimal(str(line.amount_currency)).quantize(
+                Decimal('1.00'), rounding=ROUND_DOWN),  # FIXME
 
-            'sacado_cidade': line.partner_id.l10n_br_city_id.name,
-            'sacado_uf': line.partner_id.state_id.code,
+
+
+
             'codigo_protesto': 3, # TODO: campo para identificar o protesto. '1' = Protestar, '3' = Não protestar, '9' = Cancelar protesto automático
             'prazo_protesto': 0,
             'codigo_baixa': 2,
