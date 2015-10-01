@@ -125,9 +125,6 @@ class PagFor500(Cnab):
                 line.ml_maturity_date),
             'especie_titulo': 8,  # TODO: Código adotado para identificar o título de cobrança. 8 é Nota de cŕedito comercial
             'aceite_titulo': u'A',  # TODO: 'A' se título foi aceito pelo sacado. 'N' se não foi.
-
-            'juros_mora_taxa_dia': Decimal('0.00'), # TODO: trazer taxa de juros do Odoo. Depende do valor do 27.3P CEF/FEBRABAN e Itaú não tem.
-            'valor_abatimento': Decimal('0.00'),
             'tipo_inscricao': int(
                 self.sacado_inscricao_tipo(line.partner_id)),
             'cnpj_cpf_base_forn': int(
@@ -161,6 +158,15 @@ class PagFor500(Cnab):
                 Decimal('1.00'), rounding=ROUND_DOWN),
             'valor_pagto': Decimal(str(line.amount_currency)).quantize(
                 Decimal('1.00'), rounding=ROUND_DOWN),  # FIXME
+            'valor_desconto': Decimal('02.00'),
+            'valor_acrescimo': Decimal('00.00'),
+            'tipo_documento': 2,  # NF_Fatura_01/Fatura_02/NF_03/Duplicata_04/Outros_05
+            'numero_nf': 1621405338,
+            'serie_documento': u'AB',
+            'modalidade_pagamento': 1,  # TODO trazer o modo de pagamento
+            'tipo_movimento': 0,  # TODO Tipo de Movimento. 0 - Inclusão. 5 - Alteração. 9 - Exclusão. Wkf Odoo.
+            'codigo_movimento': 0,  # FIXME
+            'horario_consulta_saldo': u'5',  # FIXME
 
 
 
@@ -171,13 +177,6 @@ class PagFor500(Cnab):
             'prazo_baixa': 0, # De 5 a 120 dias.
             'controlecob_data_gravacao': self.data_hoje(),
 
-            # Durante testes:
-            'valor_documento': Decimal(str(line.amount_currency)).quantize(
-                Decimal('1.00'), rounding=ROUND_DOWN),
-            'valor_pagto': Decimal(str(line.amount_currency)).quantize(
-                Decimal('1.00'), rounding=ROUND_DOWN), # FIXME: valor pode diferir do documento
-            'valor_desconto': Decimal('02.00'),
-            'valor_acrescimo': Decimal('00.00'),
         }
 
     def remessa(self, order):

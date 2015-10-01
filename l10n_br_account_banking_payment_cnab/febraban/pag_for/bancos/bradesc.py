@@ -50,6 +50,10 @@ class BradescoPagFor(PagFor500):
         :return:
         """
         vals = super(BradescoPagFor, self)._prepare_segmento(line)
+
+        # TODO campo para informar a data do pagamento.
+        vals['data_para_efetivacao_pag'] = self.muda_campos_data(vals['vencimento_titulo'])
+
         return vals
 
     # Override cnab_240.nosso_numero. Diferentes números de dígitos entre CEF e Itau
@@ -59,3 +63,8 @@ class BradescoPagFor(PagFor500):
         nosso_numero = re.sub(
             '[%s]' % re.escape(string.punctuation), '', format[3:-1] or '')
         return carteira, nosso_numero, digito
+
+    def muda_campos_data(self, campo):
+        campo = str(campo)
+        campo = campo[-4:] + campo[2:4] + campo[:2]
+        return int(campo)
