@@ -65,19 +65,29 @@ class PagFor500(Cnab):
             'arquivo_data_de_geracao': self.data_hoje(),
             'arquivo_hora_de_geracao': self.hora_agora(),
             # TODO: Número sequencial de arquivo
-            'arquivo_sequencia': 1,
+            'numero_remessa': 1,
             'cedente_inscricao_tipo': self.inscricao_tipo,
-            'cedente_inscricao_numero': int(punctuation_rm(
-                self.order.company_id.cnpj_cpf)),
+            'cnpj_cpf_base': int(punctuation_rm(
+                self.order.company_id.cnpj_cpf)[0:8]),
+            'cnpj_cpf_filial': int(punctuation_rm(
+                self.order.company_id.cnpj_cpf)[9:12]),
+            'controle_cnpj': int(punctuation_rm(
+                self.order.company_id.cnpj_cpf)[12:14]),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_agencia_conta_dv':
                 self.order.mode.bank_id.bra_number_dig,
-            'cedente_nome': self.order.company_id.legal_name,
+            'nome_empresa_pagadora': self.order.company_id.legal_name,
             'cedente_codigo_agencia_digito':
                 self.order.mode.bank_id.bra_number_dig,
             'arquivo_codigo': 1,  # Remessa/Retorno
             'servico_operacao': u'R',
+
+            'reservado_empresa': u'BRADESCO PAG FOR',
+            # TODO: Sequencial crescente e nunca pode ser repetido
+            'numero_lista_debito': 1,
+            # TODO: Sequencial crescente de 1 a 1 no arquivo. O primeiro header será sempre 000001
+            'sequencial': 1
         }
 
     def format_date(self, srt_date):
@@ -111,11 +121,6 @@ class PagFor500(Cnab):
 
         prefixo, sulfixo = self.cep(line.partner_id.zip)
         return {
-            'cedente_agencia': int(self.order.mode.bank_id.bra_number),
-            'cedente_conta': int(self.order.mode.bank_id.acc_number),
-            'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
-            'cedente_agencia_conta_dv': self.order.mode.bank_id.bra_number_dig,
-            'identificacao_titulo': u'0000000',  # TODO
             'numero_documento': line.name,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
@@ -128,16 +133,27 @@ class PagFor500(Cnab):
 
             'juros_mora_taxa_dia': Decimal('0.00'), # TODO: trazer taxa de juros do Odoo. Depende do valor do 27.3P CEF/FEBRABAN e Itaú não tem.
             'valor_abatimento': Decimal('0.00'),
-            'sacado_inscricao_tipo': int(
+            'tipo_inscricao': int(
                 self.sacado_inscricao_tipo(line.partner_id)),
-            'sacado_inscricao_numero': int(
-                self.rmchar(line.partner_id.cnpj_cpf)),
-            'sacado_nome': line.partner_id.legal_name,
-            'sacado_endereco': (
+            'cnpj_cpf_base_forn': int(
+                self.rmchar(line.partner_id.cnpj_cpf)[0:8]),
+            'cnpj_cpf_filial_forn': int(
+                self.rmchar(line.partner_id.cnpj_cpf)[9:12]),
+            'controle_cnpj_cpf_forn': int(
+                self.rmchar(line.partner_id.cnpj_cpf)[12:14]),
+            'nome_forn': line.partner_id.legal_name,
+            'endereco_forn': (
                 line.partner_id.street + ' ' + line.partner_id.number),
-            'sacado_bairro': line.partner_id.district,
-            'sacado_cep': int(prefixo),
-            'sacado_cep_sufixo': int(sulfixo),
+            'cep_complemento_forn': int(sulfixo),
+            # TODO: código do banco. Para a Modalidade de Pagamento valor pode variar
+            'codigo_banco_forn': 237,
+            'codigo_agencia_forn': int(self.order.mode.bank_id.bra_number),
+            'digito_agencia_forn': self.order.mode.bank_id.bra_number_dig,
+            'conta_corrente_forn': int(self.order.mode.bank_id.acc_number),
+            'digito_conta_forn': self.order.mode.bank_id.acc_number_dig,
+            # TODO Gerado pelo cliente pagador quando do agendamento de pagamento por parte desse, exceto para a modalidade 30 - Títulos em Cobrança Bradesco
+            'numero_pagamento': 1234321,
+
             'sacado_cidade': line.partner_id.l10n_br_city_id.name,
             'sacado_uf': line.partner_id.state_id.code,
             'codigo_protesto': 3, # TODO: campo para identificar o protesto. '1' = Protestar, '3' = Não protestar, '9' = Cancelar protesto automático
@@ -151,6 +167,8 @@ class PagFor500(Cnab):
                 Decimal('1.00'), rounding=ROUND_DOWN),
             'valor_pagto': Decimal(str(line.amount_currency)).quantize(
                 Decimal('1.00'), rounding=ROUND_DOWN), # FIXME: valor pode diferir do documento
+            'valor_desconto': Decimal('02.00'),
+            'valor_acrescimo': Decimal('00.00'),
         }
 
     def remessa(self, order):
