@@ -28,12 +28,12 @@ import string
 from decimal import *
 
 
-class BradescoPagFor(Cnab240):
+class Bradesco240(Cnab240):
 
     def __init__(self):
         super(Cnab240, self).__init__()
-        from cnab240.bancos import bradescoPagFor
-        self.bank = bradescoPagFor
+        from cnab240.bancos import bradesco
+        self.bank = bradesco
 
     def _prepare_header(self):
         """
@@ -41,7 +41,7 @@ class BradescoPagFor(Cnab240):
         :param order:
         :return:
         """
-        vals = super(BradescoPagFor, self)._prepare_header()
+        vals = super(Bradesco240, self)._prepare_header()
         return vals
 
     def _prepare_segmento(self, line):
@@ -50,7 +50,12 @@ class BradescoPagFor(Cnab240):
         :param line:
         :return:
         """
-        vals = super(BradescoPagFor, self)._prepare_segmento(line)
+        vals = super(Bradesco240, self)._prepare_segmento(line)
+        vals['prazo_baixa'] = unicode(str(
+            vals['prazo_baixa']), "utf-8")
+        vals['desconto1_percentual'] = Decimal('0.00')
+        vals['valor_iof'] = Decimal('0.00')
+        vals['cobrancasimples_valor_titulos'] = Decimal('02.00')
         return vals
 
     # Override cnab_240.nosso_numero. Diferentes números de dígitos entre CEF e Itau

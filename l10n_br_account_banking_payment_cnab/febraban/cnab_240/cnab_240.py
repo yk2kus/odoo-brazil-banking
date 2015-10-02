@@ -46,8 +46,8 @@ class Cnab240(Cnab):
             from bancos.itau import Itau240
             return Itau240
         elif bank == '237':
-            from bancos.bradesc import BradescoPagFor
-            return BradescoPagFor
+            from bancos.bradesco import Bradesco240
+            return Bradesco240
         elif bank == '104':
             from bancos.cef import Cef240
             return Cef240

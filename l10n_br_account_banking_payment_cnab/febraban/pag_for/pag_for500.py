@@ -42,7 +42,7 @@ class PagFor500(Cnab):
     @staticmethod
     def get_bank(bank):
         if bank == '237':
-            from bancos.bradesc import BradescoPagFor
+            from bancos.bradesco import BradescoPagFor
             return BradescoPagFor
         else:
             return PagFor500
@@ -167,6 +167,14 @@ class PagFor500(Cnab):
             'tipo_movimento': 0,  # TODO Tipo de Movimento. 0 - Inclusão. 5 - Alteração. 9 - Exclusão. Wkf Odoo.
             'codigo_movimento': 0,  # FIXME
             'horario_consulta_saldo': u'5',  # FIXME
+            'codigo_area_empresa': 0,
+            'codigo_lancamento': 22334,
+            'tipo_conta_fornecedor': 1,  # FIXME
+            'sequencial': 3,  # FIXME
+            # Trailer
+            'totais_quantidade_registros': 0,
+            'total_valor_arq': Decimal('02.00'),  # FIXME: lib nao reconhece campo
+            'sequencial_trailer': 1,
 
 
 
