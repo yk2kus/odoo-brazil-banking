@@ -38,6 +38,7 @@
     ],
     'data': [
         'view/l10n_br_payment_cnab.xml',
+        'data/l10n_br_payment_mode_type.xml',
     ],
     'active': False,
     "installable": True,
