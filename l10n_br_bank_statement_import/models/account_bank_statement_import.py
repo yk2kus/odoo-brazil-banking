@@ -33,10 +33,9 @@ class AccountBankStatementImport(models.TransientModel):
         bank_account_id = None
         if account_number and len(account_number) > 4:
             sql = """select id from res_partner_bank
-                    where (bra_number || bra_number_dig || acc_number ||
-                    acc_number_dig) = %s """
+                where (acc_number = %s) or ((bra_number || acc_number) = %s)"""
 
-            self.env.cr.execute(sql, [account_number])
+            self.env.cr.execute(sql, [account_number, account_number])
             res = self.env.cr.fetchone()
             if res:
                 bank_account_id = res[0]
