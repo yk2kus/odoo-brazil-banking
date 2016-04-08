@@ -49,7 +49,4 @@
         #'data/l10n_br_payment_export_type.xml',
         #'data/l10n_br_payment_mode.xml',
     ],
-    'active': False,
-    "installable": True,
-    "auto_install": False,
 }

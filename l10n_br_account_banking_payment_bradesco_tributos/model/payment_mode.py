@@ -26,10 +26,6 @@ from openerp import models, fields
 class PaymentMode(models.Model):
     _inherit = "payment.mode"
 
-    payment_order_type = fields.Selection(
-        selection_add=[
-            ('tax', u'Tributos'),
-        ])
     gnre_value_field = fields.Many2one(
         'ir.model.fields', 'Value field',
         domain=[('model_id', '=', 'account.invoice')])
