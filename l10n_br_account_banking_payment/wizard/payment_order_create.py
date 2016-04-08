@@ -46,9 +46,9 @@ class PaymentOrderCreate(models.TransientModel):
         self.ensure_one()
 
         # Search for all posted moves
-        if self.all_posted_moves == True:
-            index = domain.index(('date_maturity', '<=', self.duedate))
-            domain[index + 1] = ('date_maturity', '>', self.duedate)
+        if self.all_posted_moves:
+            pass
+            # TODO Implementar a pesquisa correta
 
         if payment_order.payment_order_type == 'payment':
             # For payables, propose all unreconciled credit lines,
