@@ -21,10 +21,11 @@
 #
 ##############################################################################
 
-from openerp import models, api, workflow, fields
-import base64
 import time
+import base64
+from openerp import models, api, workflow, fields
 from ..febraban.cnab import Cnab
+from cnab240.errors import Cnab240Error
 
 # TODO Server action para a cada dia retornar o sufixo do arquivo para zero
 
@@ -63,8 +64,8 @@ class L10nPaymentCnab(models.TransientModel):
                     time.strftime('%d%m'), str(order.file_number))
             self.state = 'done'
             self.cnab_file = base64.b64encode(remessa)
-            workflow.trg_validate(self.env.uid, 'payment.order', order_id,
-                                  'done', self.env.cr)
+            workflow.trg_validate(self.env.uid, 'payment.order',
+                                  order_id, 'done', self.env.cr)
 
             return {
                 'type': 'ir.actions.act_window',
