@@ -40,11 +40,9 @@ class AccountMoveLine(models.Model):
     @api.multi
     def send_payment(self):
         boleto_list = []
-
         for move_line in self:
             try:
-
-                if move_line.payment_mode_id.type_payment == '00':
+                if move_line.payment_mode_id.type_sale_payment == '00':
                     number_type = move_line.company_id.own_number_type
                     if not move_line.boleto_own_number:
                         if number_type == '0':
@@ -71,7 +69,7 @@ class AccountMoveLine(models.Model):
             except BoletoException as be:
                 _logger.error(be.message or be.value, exc_info=True)
                 continue
-            except Exception as e:
-                _logger.error(e.message or e.value, exc_info=True)
+            except Exception:
+                _logger.error('Erro ao gerar boleto', exc_info=True)
                 continue
         return boleto_list

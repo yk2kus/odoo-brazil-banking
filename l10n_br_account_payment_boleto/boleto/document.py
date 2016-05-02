@@ -95,6 +95,7 @@ class Boleto:
         self.boleto.especie_documento = payment_mode_id.boleto_modalidade
         self.boleto.aceite = payment_mode_id.boleto_aceite
         self.boleto.carteira = payment_mode_id.boleto_carteira
+        self.boleto.instrucoes = payment_mode_id.instrucoes
 
     def _cedente(self, company):
         """
@@ -139,6 +140,7 @@ class Boleto:
 
         boleto = BoletoPDF(fbuffer)
         for i in range(len(boleto_list)):
+            import ipdb; ipdb.set_trace()
             boleto.drawBoleto(boleto_list[i])
             boleto.nextPage()
         boleto.save()
@@ -275,6 +277,24 @@ class BoletoSicredi(Boleto):
         self.boleto.nosso_numero = self.nosso_numero
 
 
+class BoletoSicoob(Boleto):
+    def __init__(self, move_line, nosso_numero):
+        self.boleto = Boleto.getBoletoClass(move_line)()
+        self.account_number = move_line.payment_mode_id.bank_id.acc_number
+        self.account_digit = move_line.payment_mode_id.bank_id.acc_number_dig
+        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
+        self.branch_digit = move_line.payment_mode_id.bank_id.bra_number_dig
+        Boleto.__init__(self, move_line, nosso_numero)
+        self.boleto.codigo_beneficiario = \
+            unicode(move_line.payment_mode_id.bank_id.codigo_da_empresa)
+        self.boleto.nosso_numero = self.nosso_numero
+
+    def getAccountNumber(self):
+        return self.account_number.encode('utf-8')
+
+    def getBranchNumber(self):
+        return self.branch_number.encode('utf-8')
+
 dict_boleto = {
     '1': (BoletoBB, 'Banco do Brasil 18'),
     '2': (BoletoBarisul, 'Barisul x'),
@@ -288,6 +308,7 @@ dict_boleto = {
     '10': (BoletoStatander101201, 'Santander 101, 201'),
     '11': (BoletoCaixaSigcb, 'Caixa Sigcb'),
     '12': (BoletoSicredi, 'Sicredi'),
+    '13': (BoletoSicoob, 'Sicoob'),
 }
 
 
