@@ -140,7 +140,6 @@ class Boleto:
 
         boleto = BoletoPDF(fbuffer)
         for i in range(len(boleto_list)):
-            import ipdb; ipdb.set_trace()
             boleto.drawBoleto(boleto_list[i])
             boleto.nextPage()
         boleto.save()

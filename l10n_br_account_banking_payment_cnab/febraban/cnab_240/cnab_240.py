@@ -214,7 +214,7 @@ class Cnab240(Cnab):
         self.arquivo = Arquivo(self.bank, **header)
         for line in order.line_ids:
             seg = self._prepare_segmento(line)
-            print seg
+
             self.arquivo.incluir_cobranca(**seg)
             self.arquivo.lotes[0].header.servico_servico = 1
             # TODO: tratar soma de tipos de cobranca

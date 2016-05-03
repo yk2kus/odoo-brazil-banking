@@ -70,7 +70,6 @@ class PaymentOrderCreate(models.TransientModel):
     def _prepare_payment_line(self, payment, line):
         res = super(PaymentOrderCreate, self)._prepare_payment_line(
             payment, line)
-        import ipdb; ipdb.set_trace()
         # res['communication2'] = line.payment_mode_id.comunicacao_2
         res['percent_interest'] = line.payment_mode_id.cnab_percent_interest
 

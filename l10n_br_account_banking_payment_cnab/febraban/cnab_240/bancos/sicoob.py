@@ -3,8 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from ..cnab_240 import Cnab240
-import re
-import string
 
 
 class Sicoob240(Cnab240):
@@ -16,20 +14,20 @@ class Sicoob240(Cnab240):
 
     def _prepare_header(self):
         vals = super(Sicoob240, self)._prepare_header()
-        vals['controlecob_numero'] = '01'# TODO gerar número apropriado
+        vals['controlecob_numero'] = '01'
         vals['controlecob_data_gravacao'] = self.data_hoje()
         return vals
 
     def _prepare_segmento(self, line):
         vals = super(Sicoob240, self)._prepare_segmento(line)
 
-        carteira, nosso_numero, digito = self.nosso_numero(
+        nosso_numero, digito = self.nosso_numero(
             line.move_line_id.transaction_ref)
 
-        vals['cedente_dv_ag_cc'] = int(
-            vals['cedente_dv_ag_cc'])
-        vals['carteira_numero'] = int(carteira)
-        vals['nosso_numero'] = int(nosso_numero)
+        parcela = line.move_line_id.name.split('/')[1]
+        vals['carteira_numero'] = int(line.order_id.mode.boleto_carteira)
+        vals['nosso_numero'] = self.format_nosso_numero(
+            nosso_numero, parcela, line.order_id.mode.boleto_modalidade)
         vals['nosso_numero_dv'] = int(digito)
         vals['prazo_baixa'] = '0'
         vals['controlecob_data_gravacao'] = self.data_hoje()
@@ -37,7 +35,9 @@ class Sicoob240(Cnab240):
 
     def nosso_numero(self, format):
         digito = format[-1:]
-        carteira = format[:3]
-        nosso_numero = re.sub(
-            '[%s]' % re.escape(string.punctuation), '', format[3:-1] or '')
-        return carteira, nosso_numero, digito
+        nosso_numero = format[2:-2]
+        return nosso_numero, digito
+
+    def format_nosso_numero(self, nosso_numero, parcela, modalidade):
+        return "%s%s%s4     " % (nosso_numero.zfill(10), parcela.zfill(2),
+                                 modalidade)

@@ -139,7 +139,6 @@ class PaymentOrderCreate(models.TransientModel):
     def _prepare_payment_line(self, payment, line):
         res = super(PaymentOrderCreate, self)._prepare_payment_line(payment,
                                                                     line)
-        import ipdb; ipdb.set_trace()
         if payment.payment_order_type == 'cobranca':
             res['amount_currency'] *= -1
         if line.invoice:
