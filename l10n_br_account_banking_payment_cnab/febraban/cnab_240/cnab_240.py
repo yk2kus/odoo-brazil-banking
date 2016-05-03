@@ -54,6 +54,9 @@ class Cnab240(Cnab):
         elif bank == '033':
             from .bancos.santander import Santander240
             return Santander240
+        elif bank == '756':
+            from .bancos.sicoob import Sicoob240
+            return Sicoob240
         else:
             return Cnab240
 
@@ -154,6 +157,8 @@ class Cnab240(Cnab):
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
+            'cedente_nome': self.order.company_id.legal_name,
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),
             # DV ag e cc
             'cedente_dv_ag_cc': (self.order.mode.bank_id.bra_acc_dig),
             'identificacao_titulo': u'0000000',  # TODO
@@ -205,9 +210,12 @@ class Cnab240(Cnab):
         cobrancasimples_valor_titulos = 0
 
         self.order = order
-        self.arquivo = Arquivo(self.bank, **self._prepare_header())
+        header = self._prepare_header()
+        self.arquivo = Arquivo(self.bank, **header)
         for line in order.line_ids:
-            self.arquivo.incluir_cobranca(**self._prepare_segmento(line))
+            seg = self._prepare_segmento(line)
+            print seg
+            self.arquivo.incluir_cobranca(**seg)
             self.arquivo.lotes[0].header.servico_servico = 1
             # TODO: tratar soma de tipos de cobranca
             cobrancasimples_valor_titulos += line.amount_currency
