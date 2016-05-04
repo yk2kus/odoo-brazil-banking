@@ -14,7 +14,7 @@ class Sicoob240(Cnab240):
 
     def _prepare_header(self):
         vals = super(Sicoob240, self)._prepare_header()
-        vals['controlecob_numero'] = '01'
+        vals['controlecob_numero'] = self.order.id
         vals['controlecob_data_gravacao'] = self.data_hoje()
         return vals
 
@@ -30,6 +30,7 @@ class Sicoob240(Cnab240):
             nosso_numero, parcela, line.order_id.mode.boleto_modalidade)
         vals['nosso_numero_dv'] = int(digito)
         vals['prazo_baixa'] = '0'
+        vals['controlecob_numero'] = self.order.id
         vals['controlecob_data_gravacao'] = self.data_hoje()
         return vals
 

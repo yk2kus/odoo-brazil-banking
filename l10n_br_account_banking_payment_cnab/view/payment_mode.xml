@@ -9,7 +9,6 @@
             <field name="arch" type="xml">
                 <field name="internal_sequence_id" position="after">
                     <field name="condicao_emissao_papeleta"/>
-                    <field name="cnab_percent_interest"/>
                     <field name="comunicacao_2"/>
                 </field>
             </field>

@@ -20,6 +20,7 @@
 #
 ##############################################################################
 
+import re
 from datetime import datetime, date
 from pyboleto import bank
 
@@ -285,7 +286,8 @@ class BoletoSicoob(Boleto):
         self.branch_digit = move_line.payment_mode_id.bank_id.bra_number_dig
         Boleto.__init__(self, move_line, nosso_numero)
         self.boleto.codigo_beneficiario = \
-            unicode(move_line.payment_mode_id.bank_id.codigo_da_empresa)
+            re.sub('[^0-9]', '',
+                   move_line.payment_mode_id.bank_id.codigo_da_empresa)
         self.boleto.nosso_numero = self.nosso_numero
 
     def getAccountNumber(self):
