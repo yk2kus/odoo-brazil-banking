@@ -20,6 +20,7 @@
 ##############################################################################
 import logging
 import StringIO
+from decimal import Decimal
 from openerp import api, models, fields
 from .file_cnab240_parser import Cnab240Parser as cnabparser
 
@@ -32,6 +33,7 @@ MODOS_IMPORTACAO_CNAB = [
     ('bradesco_cobranca_240', u'Bradesco Cobrança 240'),
     ('itau_cobranca_240', u'Itaú Cobrança 240'),
     ('cef_cobranca_240', u'CEF Cobrança 240'),
+    ('sicoob_240', u'Sicoob Cobrança 240'),
 ]
 
 
@@ -70,31 +72,21 @@ class AccountBankStatementImport(models.TransientModel):
             unique_import_id is assumed to already be unique at the moment of
             CNAB exportation."""
         stmt_vals['journal_id'] = journal_id
+        journal = self.env['account.journal'].browse(journal_id)
+        if journal.with_last_closing_balance:
+            start = self.env['account.bank.statement']\
+                ._compute_balance_end_real(journal_id)
+            stmt_vals['balance_start'] = Decimal("%.4g" % start)
+            stmt_vals['balance_end_real'] += Decimal("%.4g" % start)
+
         for line_vals in stmt_vals['transactions']:
             unique_import_id = line_vals.get('unique_import_id', False)
             if unique_import_id:
                 line_vals['unique_import_id'] = unique_import_id
-            if not line_vals.get('bank_account_id'):
-                # Find the partner and his bank account or create the bank
-                # account. The partner selected during the reconciliation
-                # process will be linked to the bank when the statement is
-                # closed.
-                partner_id = False
-                bank_account_id = False
-                partner_account_number = line_vals.get('account_number')
-                if partner_account_number:
-                    bank_model = self.env['res.partner.bank']
-                    banks = bank_model.search(
-                        [('acc_number', '=', partner_account_number)], limit=1)
-                    if banks:
-                        bank_account_id = banks[0].id
-                        partner_id = banks[0].partner_id.id
-                    else:
-                        bank_obj = self._create_bank_account(
-                            partner_account_number)
-                        bank_account_id = bank_obj and bank_obj.id or False
-                line_vals['partner_id'] = partner_id
-                line_vals['bank_account_id'] = bank_account_id
+                payment = self.env['payment.line'].search(
+                    [('name', '=', line_vals['unique_import_id'])])
+                line_vals['partner_id'] = payment.partner_id.id
+
         return stmt_vals
 
     @api.multi

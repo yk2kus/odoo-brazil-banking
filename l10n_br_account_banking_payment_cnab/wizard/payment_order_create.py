@@ -71,7 +71,7 @@ class PaymentOrderCreate(models.TransientModel):
         res = super(PaymentOrderCreate, self)._prepare_payment_line(
             payment, line)
         # res['communication2'] = line.payment_mode_id.comunicacao_2
-        res['percent_interest'] = line.payment_mode_id.cnab_percent_interest
+        res['percent_interest'] = line.payment_mode_id.late_payment_interest
 
         if payment.mode.type.code == '400':
             # write bool to move_line to avoid it being added on cnab again

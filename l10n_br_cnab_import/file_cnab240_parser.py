@@ -22,12 +22,10 @@
 
 import tempfile
 import datetime
+from decimal import Decimal
 from openerp.tools.translate import _
-from openerp.addons.account_bank_statement_import.parserlib import (
-    BankStatement)
 
 try:
-    import cnab240
     from cnab240.tipos import Arquivo
     import codecs
 except:
@@ -55,6 +53,9 @@ class Cnab240Parser(object):
         elif nome_impt == 'itau_cobranca_240':
             from cnab240.bancos import itau
             return itau
+        elif nome_impt == 'sicoob_240':
+            from cnab240.bancos import sicoob
+            return sicoob
         else:
             raise Warning(_('Modo de importação não encontrado.'))
 
@@ -65,15 +66,13 @@ class Cnab240Parser(object):
         cnab240_file.write(data)
         cnab240_file.flush()
         ret_file = codecs.open(cnab240_file.name, encoding='ascii')
-
         # Nome_modo_impt é o nome da pasta do json. Código do banco é inválido
         # nessa situação
         arquivo = Arquivo((self.determine_bank(banco_impt)), arquivo=ret_file)
 
         cnab240_file.close()
-
-        res = []
         transacoes = []
+        total_amt = Decimal(0.00)
         for lote in arquivo.lotes:
             for evento in lote.eventos:
                 transacoes.append({
@@ -87,26 +86,20 @@ class Cnab240Parser(object):
                     # nosso numero, Alfanumérico
                     'unique_import_id': evento.numero_documento,
                 })
+                total_amt += evento.valor_titulo
 
-                res.append({
-                    'name': evento.sacado_nome,
-                    'date': datetime.datetime.strptime(
-                        str(evento.vencimento_titulo), '%d%m%Y'),
-                    'amount': evento.valor_titulo,
-                    'ref': evento.numero_documento,
-                    'label': evento.sacado_inscricao_numero,  # cnpj
-                    'transaction_id': evento.numero_documento,
-                    # nosso numero
-                    'commission_amount': evento.valor_tarifas,
-
-                    'currency_code': u'BRL',  # Código da moeda
-                    'account_number': evento.cedente_agencia,
-                    'transactions': transacoes,
-                })
-                transacoes = []
-
-        self.result_row_list = res
-        return res
+        vals_bank_statement = {
+            'name': '%s - %s' % (arquivo.header.nome_do_banco,
+                                 arquivo.header.arquivo_data_de_geracao),
+            'date': datetime.datetime.strptime(
+                str(arquivo.header.arquivo_data_de_geracao), '%d%m%Y'),
+            'balance_start': 0.00,
+            'balance_end_real': total_amt,
+            'currency_code': u'BRL',  # Código da moeda
+            'account_number': arquivo.header.cedente_conta,
+            'transactions': transacoes
+        }
+        return [vals_bank_statement]
 
     def get_st_line_vals(self, line, *args, **kwargs):
         """This method must return a dict of vals that can be passed to create
