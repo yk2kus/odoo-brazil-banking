@@ -64,6 +64,15 @@ class L10nPaymentCnab(models.TransientModel):
                     time.strftime('%d%m'), str(order.file_number))
             self.state = 'done'
             self.cnab_file = base64.b64encode(remessa)
+
+            self.env['ir.attachment'].create({
+                'name': self.name,
+                'datas': self.cnab_file,
+                'datas_fname': self.name,
+                'description': 'Arquivo CNAB 240',
+                'res_model': 'payment.order',
+                'res_id': order_id
+            })
             workflow.trg_validate(self.env.uid, 'payment.order',
                                   order_id, 'done', self.env.cr)
 

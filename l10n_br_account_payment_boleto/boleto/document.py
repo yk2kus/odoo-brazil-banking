@@ -103,11 +103,11 @@ class Boleto:
         :param company:
         :return:
         """
-        self.boleto.cedente = company.partner_id.legal_name.encode('utf-8')
-        self.boleto.cedente_documento = company.cnpj_cpf.encode('utf-8')
+        self.boleto.cedente = company.partner_id.legal_name
+        self.boleto.cedente_documento = company.cnpj_cpf
         self.boleto.cedente_bairro = company.district
         self.boleto.cedente_cep = company.zip
-        self.boleto.cedente_cidade = company.city
+        self.boleto.cedente_cidade = company.l10n_br_city_id.name
         self.boleto.cedente_logradouro = company.street + ', ' + company.number
         self.boleto.cedente_uf = company.state_id.code
         self.boleto.agencia_cedente = self.getBranchNumber()
@@ -120,7 +120,7 @@ class Boleto:
         :return:
         """
         self.boleto.sacado_endereco = partner.street + ', ' + partner.number
-        self.boleto.sacado_cidade = partner.city
+        self.boleto.sacado_cidade = partner.l10n_br_city_id.name
         self.boleto.sacado_bairro = partner.district
         self.boleto.sacado_uf = partner.state_id.code
         self.boleto.sacado_cep = partner.zip
@@ -185,6 +185,7 @@ class BoletoBradesco(Boleto):
         # end bank specific
         Boleto.__init__(self, move_line, nosso_numero)
         self.boleto.nosso_numero = self.nosso_numero
+        self.boleto.valor = 0.0  # Não preencher
 
 
 class BoletoCaixa(Boleto):
