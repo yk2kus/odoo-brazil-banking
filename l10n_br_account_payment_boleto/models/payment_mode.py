@@ -23,12 +23,18 @@
 from openerp import models, fields, api
 from ..boleto.document import getBoletoSelection
 from openerp.exceptions import ValidationError
+from openerp.addons import decimal_precision as dp
 
 selection = getBoletoSelection()
 
 
 class PaymentMode(models.Model):
     _inherit = 'payment.mode'
+
+    late_payment_fee = fields.Float(string=u"Percentual Multa",
+                                    digits=dp.get_precision('Account'))
+    late_payment_interest = fields.Float(string=u"Juros de Mora ao Mês",
+                                         digits=dp.get_precision('Account'))
 
     boleto_carteira = fields.Char('Carteira', size=3)
     boleto_modalidade = fields.Char('Modalidade', size=2)

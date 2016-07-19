@@ -86,16 +86,28 @@ class AccountMoveLine(models.Model):
                             nosso_numero = self.env['ir.sequence'].next_by_id(
                                 move_line.payment_mode_id.
                                 internal_sequence_id.id)
+>>>>>>> 48220ee6b6bd2e70c09cf53c8a58b0eb427a4103
                     else:
-                        nosso_numero = move_line.boleto_own_number
+                        nosso_numero = self.env['ir.sequence'].next_by_id(
+                            move_line.payment_mode_id.
+                            internal_sequence_id.id)
+                else:
+                    nosso_numero = move_line.boleto_own_number
+                try:
+                    int(nosso_numero)
+                except:
+                    raise Warning(u"Nosso numero must be integer please check prefix and suffix in payment method sequence")
+                boleto = Boleto.getBoleto(move_line, nosso_numero)
+                if boleto:
+                    move_line.date_payment_created = date.today()
+                    move_line.transaction_ref = \
+                        boleto.boleto.format_nosso_numero()
+                    move_line.boleto_own_number = nosso_numero
+                
 
-                    boleto = Boleto.getBoleto(move_line, nosso_numero)
-                    if boleto:
-                        move_line.date_payment_created = date.today()
-                        move_line.transaction_ref = \
-                            boleto.boleto.format_nosso_numero()
-                        move_line.boleto_own_number = nosso_numero
-
+<<<<<<< HEAD
+                boleto_list.append(boleto.boleto)
+=======
                     boleto_list.append(boleto.boleto)
             except BoletoException as be:
                 _logger.error(be.message or be.value, exc_info=True)
@@ -103,4 +115,5 @@ class AccountMoveLine(models.Model):
             except Exception:
                 _logger.error('Erro ao gerar boleto', exc_info=True)
                 continue
+>>>>>>> 48220ee6b6bd2e70c09cf53c8a58b0eb427a4103
         return boleto_list

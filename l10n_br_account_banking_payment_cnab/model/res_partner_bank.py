@@ -29,16 +29,12 @@ class ResPartnerBank(models.Model):
     _inherit = 'res.partner.bank'
 
     bra_acc_dig = fields.Char(u'Digito Verificador Agência/Conta', size=1)
-    codigo_da_empresa = fields.Integer(
-        u'Código da empresa', size=20,
-        help=u"Será informado pelo banco depois do cadastro do beneficiário "
-             u"na agência")
     tipo_de_conta = fields.Selection(
         [('01', u'Conta corrente individual'),
          ('02', u'Conta poupança individual'),
          ('03', u'Conta depósito judicial/Depósito em consignação individual'),
          ('11', u'Conta corrente conjunta'),
          ('12', u'Conta poupança conjunta'),
-         ('13', u'Conta depósito judicial/Depósito em consignação conjunta'),],
-            u'Tipo de Conta', default='01'
+         ('13', u'Conta depósito judicial/Depósito em consignação conjunta')],
+        u'Tipo de Conta', default='01'
     )

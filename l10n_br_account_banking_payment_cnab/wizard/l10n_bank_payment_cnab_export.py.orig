@@ -65,6 +65,7 @@ class L10nPaymentCnab(models.TransientModel):
                     time.strftime('%d%m'), str(order.file_number))
             self.state = 'done'
             self.cnab_file = base64.b64encode(remessa)
+<<<<<<< HEAD
             file_name = 'CB%s%s.REM' % (
                     time.strftime('%d%m'), str(order.file_number))
             # create attachment in payment order 
@@ -76,6 +77,10 @@ class L10nPaymentCnab(models.TransientModel):
                 'res_id' : order.id,
                 }
             self.env['ir.attachment'].create(attach_vals)
+            workflow.trg_validate(self.env.uid, 'payment.order', order_id,
+                                  'done', self.env.cr)
+=======
+
             self.env['ir.attachment'].create({
                 'name': self.name,
                 'datas': self.cnab_file,
@@ -86,6 +91,7 @@ class L10nPaymentCnab(models.TransientModel):
             })
             workflow.trg_validate(self.env.uid, 'payment.order',
                                   order_id, 'done', self.env.cr)
+>>>>>>> 48220ee6b6bd2e70c09cf53c8a58b0eb427a4103
 
             return {
                 'type': 'ir.actions.act_window',

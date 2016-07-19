@@ -9,6 +9,23 @@
             <field name="arch" type="xml">
                 <group name="boletos"
                         position="inside">
+<<<<<<< HEAD
+                    <group>
+                        <field name="boleto_type"/>
+                        <field name="boleto_convenio"/>
+                        <field name="boleto_carteira"/>
+                        <field name="boleto_modalidade"/>
+                        <field name="boleto_variacao"/>
+                        <field name="boleto_cnab_code"/>
+                        <field name="boleto_aceite"/>
+                        <field name="boleto_especie"/>
+                        <field name="boleto_protesto"/>
+                        <field name="boleto_protesto_prazo"/>
+                        <field name="instrucoes"/>  
+                    </group>
+                </xpath>
+                <!--</data>-->
+=======
                     <field name="boleto_type"/>
                     <field name="boleto_convenio"/>
                     <field name="boleto_carteira"/>
@@ -24,6 +41,7 @@
                     <field name="late_payment_fee"/>
                     <field name="late_payment_interest"/>
                 </field>
+>>>>>>> 48220ee6b6bd2e70c09cf53c8a58b0eb427a4103
             </field>
         </record>
     </data>

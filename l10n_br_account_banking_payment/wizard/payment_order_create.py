@@ -46,9 +46,9 @@ class PaymentOrderCreate(models.TransientModel):
         self.ensure_one()
 
         # Search for all posted moves
-        if self.all_posted_moves == True:
-            index = domain.index(('date_maturity', '<=', self.duedate))
-            domain[index + 1] = ('date_maturity', '>', self.duedate)
+        if self.all_posted_moves:
+            pass
+            # TODO Implementar a pesquisa correta
 
         if payment_order.payment_order_type == 'payment':
             # For payables, propose all unreconciled credit lines,
@@ -137,48 +137,25 @@ class PaymentOrderCreate(models.TransientModel):
 
     @api.multi
     def _prepare_payment_line(self, payment, line):
-        res = super(PaymentOrderCreate, self)._prepare_payment_line(payment, line)
+        res = super(PaymentOrderCreate, self)._prepare_payment_line(payment,
+                                                                    line)
+        if payment.payment_order_type == 'cobranca':
+            res['amount_currency'] *= -1
         if line.invoice:
             if line.invoice.type in ('in_invoice', 'in_refund'):
                 if line.invoice.reference_type == 'structured':
-                    state = 'structured'
+                    res['state'] = 'structured'
                     res['communication'] = line.invoice.reference
                 else:
                     if line.invoice.reference:
                         res['communication'] = line.invoice.reference
                     elif line.invoice.supplier_invoice_number:
-                        res['communication'] = line.invoice.supplier_invoice_number
+                        res['communication'] = \
+                            line.invoice.supplier_invoice_number
             else:
                 # Make sure that the communication includes the
                 # customer invoice number (in the case of debit order)
                 res['communication'] = line.name
-                state = 'structured'
+                res['state'] = 'structured'
 
         return res
-
-    @api.multi
-    def create_payment(self):
-        """This method is a slightly modified version of the existing method on
-        this model in account_payment.
-        - pass the payment mode to line2bank()
-        - allow invoices to create influence on the payment process: not only
-          'Free' references are allowed, but others as well
-        - check date_to_pay is not in the past.
-        """
-        if not self.entries:
-            return {'type': 'ir.actions.act_window_close'}
-        context = self.env.context
-        payment_line_obj = self.env['payment.line']
-        payment = self.env['payment.order'].browse(context['active_id'])
-        # Populate the current payment with new lines:
-        for line in self.entries:
-            vals = self._prepare_payment_line(payment, line)
-            payment_line_obj.create(vals)
-        # Force reload of payment order view as a workaround for lp:1155525
-        return {'name': _('Payment Orders'),
-                'context': context,
-                'view_type': 'form',
-                'view_mode': 'form,tree',
-                'res_model': 'payment.order',
-                'res_id': context['active_id'],
-                'type': 'ir.actions.act_window'}

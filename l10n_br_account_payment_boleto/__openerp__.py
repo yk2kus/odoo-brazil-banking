@@ -40,10 +40,10 @@
         'views/res_company.xml',
         'views/payment_mode.xml',
         'views/account_move_line.xml',
+        'views/res_partner_bank.xml',
         'reports/report_print_button_view.xml',
     ],
     'demo': [
         'demo/payment_demo.xml',
     ],
-    'active': False,
 }

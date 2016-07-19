@@ -28,11 +28,17 @@ class PaymentMode(models.Model):
 
     condicao_emissao_papeleta = fields.Selection(
         [('1', 'Banco emite e Processa'),
+<<<<<<< HEAD
          ('2', 'Cliente emite e banco processa'),],
             u'Condição Emissão de Papeleta', default='1')
     cnab_percent_interest = fields.Float(string=u"Percentual de Juros",
                                          digits=dp.get_precision('Account'))
     multa = fields.Float('Multa')
+=======
+         ('2', 'Cliente emite e banco processa')],
+        u'Condição Emissão de Papeleta', default='1')
+
+>>>>>>> 48220ee6b6bd2e70c09cf53c8a58b0eb427a4103
     comunicacao_2 = fields.Char("Comunicação para o sacador avalista")
     # A exportação CNAB não se encaixa somente nos parâmetros de
     # débito e crédito.

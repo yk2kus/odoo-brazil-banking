@@ -8,6 +8,7 @@
             <field name="priority" eval="16"/>
             <field name="arch" type="xml">
                 <field name="internal_sequence_id" position="after">
+<<<<<<< HEAD
                     <group>
                         <field name="condicao_emissao_papeleta"/>
                         <field name="cnab_percent_interest"/>
@@ -15,6 +16,10 @@
                         <field name="comunicacao_2"/>
                     </group>
 
+=======
+                    <field name="condicao_emissao_papeleta"/>
+                    <field name="comunicacao_2"/>
+>>>>>>> 48220ee6b6bd2e70c09cf53c8a58b0eb427a4103
                 </field>
             </field>
         </record>

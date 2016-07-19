@@ -54,6 +54,9 @@ class Cnab240(Cnab):
         elif bank == '033':
             from .bancos.santander import Santander240
             return Santander240
+        elif bank == '756':
+            from .bancos.sicoob import Sicoob240
+            return Sicoob240
         else:
             return Cnab240
 
@@ -156,6 +159,8 @@ class Cnab240(Cnab):
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
+            'cedente_nome': self.order.company_id.legal_name,
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),
             # DV ag e cc
             'cedente_dv_ag_cc': (self.order.mode.bank_id.acc_number_dig),
             'identificacao_titulo': line.move_line_id.name,  # 25 chars limit 
@@ -172,10 +177,22 @@ class Cnab240(Cnab):
             'aceite_titulo': aceite,
             'data_emissao_titulo': self.format_date(
                 line.ml_date_created),
-            # TODO: trazer taxa de juros do Odoo. Depende do valor do 27.3P
+            # Taxa de juros do Odoo padrão mensal: 2. Campo 27.3P
             # CEF/FEBRABAN e Itaú não tem.
+            'codigo_juros': 2,
             'juros_mora_data': self.format_date(
                 line.ml_maturity_date),
+            'juros_mora_taxa':  Decimal(
+                str(self.order.mode.late_payment_interest)).quantize(
+                    Decimal('1.00')),
+            # Multa padrão em percentual no Odoo, valor '2'
+            'codigo_multa': '2',
+            'data_multa': self.format_date(
+                line.ml_maturity_date),
+            'juros_multa':  Decimal(
+                str(self.order.mode.late_payment_fee)).quantize(
+                    Decimal('1.00')),
+            # TODO Remover taxa dia - deixar apenas taxa normal
             'juros_mora_taxa_dia': Decimal('0.00'),
             'valor_abatimento': Decimal('0.00'),
             'sacado_inscricao_tipo': int(
@@ -207,9 +224,11 @@ class Cnab240(Cnab):
         cobrancasimples_valor_titulos = 0
 
         self.order = order
-        self.arquivo = Arquivo(self.bank, **self._prepare_header())
+        header = self._prepare_header()
+        self.arquivo = Arquivo(self.bank, **header)
         for line in order.line_ids:
-            self.arquivo.incluir_cobranca(**self._prepare_segmento(line))
+            seg = self._prepare_segmento(line)
+            self.arquivo.incluir_cobranca(header, **seg)
             self.arquivo.lotes[0].header.servico_servico = 1
             # TODO: tratar soma de tipos de cobranca
             cobrancasimples_valor_titulos += line.amount_currency
