@@ -79,7 +79,7 @@ class Cnab240Parser(object):
                 transacoes.append({
                     'name': evento.sacado_nome,
                     'date': datetime.datetime.strptime(
-                        str(evento.vencimento_titulo), '%d%m%Y'),
+                        str(evento.vencimento_titulo).zfill(8), '%d%m%Y'),
                     'amount': evento.valor_titulo,
                     'ref': evento.numero_documento,
                     'label': evento.sacado_inscricao_numero,  # cnpj
@@ -91,7 +91,7 @@ class Cnab240Parser(object):
                 res.append({
                     'name': evento.sacado_nome,
                     'date': datetime.datetime.strptime(
-                        str(evento.vencimento_titulo), '%d%m%Y'),
+                        str(evento.vencimento_titulo).zfill(8), '%d%m%Y'),
                     'amount': evento.valor_titulo,
                     'ref': evento.numero_documento,
                     'label': evento.sacado_inscricao_numero,  # cnpj
